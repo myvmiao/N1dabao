@@ -119,7 +119,15 @@ jobs:
         commit: main
         token: ${{ secrets.GITHUB_TOKEN   }}
         body: |
-          PHICOMM-N1-OpenWRT-Image 
+           ## 鉴于N1各插件更新速度快，特单独开此release
+          默认IP：192.168.1.99 默认密码： password
+          Openwrt🚀(注:此版本为jcnf个人的精简版。鉴于N1的性能，只有+o版，+o版为flowoffload加速)
+          N1在线升级方法：
+             1. cd /mnt/mmcblk2p4
+             2. wget 升级脚本链接,链接下载 https://d.ybfl.xyz/
+             3. wget img后缀名的固件链接,鼠标右击后缀.img文件获取链接地址
+             4. chmod +x *.sh
+             5. ./升级脚本名字 img固件名 
         artifacts: "/opt/openwrt/tmp/*.xz"
         
     - name: Upload firmware to WeTransfer
