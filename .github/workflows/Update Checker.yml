@@ -80,7 +80,7 @@ jobs:
         token: ${{ secrets.RELEASES_TOKEN }}
         event-type: ssrplus Source Code Update
 
- passwall:
+  passwall:
     runs-on: ubuntu-latest
 
     steps:
