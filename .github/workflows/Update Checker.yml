@@ -51,8 +51,7 @@ jobs:
       with:
         token: ${{ secrets.ACTIONS_TRIGGER_PAT }}
         event-type: Source Code Update
-
- ssrplus:
+ssrplus:
     runs-on: ubuntu-latest
 
     steps:
@@ -79,8 +78,7 @@ jobs:
       with:
         token: ${{ secrets.RELEASES_TOKEN }}
         event-type: ssrplus Source Code Update
-        
- passwall:
+passwall:
     runs-on: ubuntu-latest
 
     steps:
