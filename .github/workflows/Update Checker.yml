@@ -52,7 +52,7 @@ jobs:
         token: ${{ secrets.RELEASES_TOKEN }}
         event-type: lede Source Code Update
 
- ssrplus:
+  ssrplus:
     runs-on: ubuntu-latest
 
     steps:
