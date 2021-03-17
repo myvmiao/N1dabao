@@ -119,7 +119,7 @@ jobs:
         commit: main
         token: ${{ secrets.GITHUB_TOKEN   }}
         body: |
-           ## 鉴于N1各插件更新速度快，特单独开此release
+          ## 鉴于N1各插件更新速度快，特单独开此release
           默认IP：192.168.1.99 默认密码： password
           Openwrt🚀(注:此版本为jcnf个人的精简版。鉴于N1的性能，只有+o版，+o版为flowoffload加速)
           N1在线升级方法：
