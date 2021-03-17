@@ -128,12 +128,8 @@ jobs:
              3. wget img后缀名的固件链接,鼠标右击后缀.img文件获取链接地址
              4. chmod +x *.sh
              5. ./升级脚本名字 img固件名 
-        artifacts: "/opt/openwrt/tmp/*.xz"
-    
-    - name: Telegram notification
-      if: steps.organize.outputs.status == 'success' && !cancelled()
-      run: curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=${{ env.version }}打包编译完成" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
-        
+        artifacts: "/opt/openwrt/tmp/*.xz"   
+
     - name: Upload firmware to WeTransfer
       if: steps.xz.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
       run: |
@@ -155,5 +151,4 @@ jobs:
         keep_latest: 3
         delete_tags: true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
-    
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
