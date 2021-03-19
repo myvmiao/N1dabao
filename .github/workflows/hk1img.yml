@@ -100,7 +100,7 @@ jobs:
         cd /opt/openwrt
              
         sudo chmod +x mk_s905x3_multi.sh
-        sudo ./mk_n1_opimg.sh
+        sudo ./mk_s905x3_multi.sh
         	
     - name: xz-z
       id: xz
