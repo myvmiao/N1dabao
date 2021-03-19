@@ -1,4 +1,4 @@
-此项目基于flippy的55+o打包N1和s905X3 （hk1等）的openwrt
+此项目基于flippy的55+o打包N1和s905X3 （hk1等）的openwrt，为jcnf个人正在使用的固件版本。
 
 openwrt来自我自己的另一个项目[N1Openwrt](https://github.com/Netflixxp/op-)
 
