@@ -107,9 +107,10 @@ jobs:
       run: |
         sudo chmod  -R 777 /opt
         cd /opt/openwrt/tmp 
-        xz -z $RELEASE_NAME
+        sudo xz -z $RELEASE_NAME
         
         echo "::set-output name=status::success"
+
     - name: Create release
       if: steps.xz.outputs.status == 'success'  &&  env.RELEASE == 'true' && !cancelled()
       uses: ncipollo/release-action@v1
