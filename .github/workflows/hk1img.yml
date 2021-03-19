@@ -1,4 +1,4 @@
-name: Build Openwrt img
+name: Build HK1 img
 
 on:
   repository_dispatch:
