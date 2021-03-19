@@ -45,7 +45,7 @@ fi
 echo "Use $OPWRT_ROOTFS_GZ as openwrt rootfs!"
 
 # 目标镜像文件
-TGT_IMG="${WORK_DIR}/openwrt_s905x3_multi_R21.2.1_k5.4.105-flippy-55+o.img"
+TGT_IMG="${WORK_DIR}/HK1-jcnf-mini-55+o.img"
 
 # 判断内核版本是否 >= 5.10
 K_VER=$(echo "$KERNEL_VERSION" | cut -d '.' -f1)
