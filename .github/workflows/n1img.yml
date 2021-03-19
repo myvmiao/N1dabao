@@ -1,4 +1,4 @@
-name: Build N1&HK1 img
+name: Build N1 img
 
 on:
   repository_dispatch:
