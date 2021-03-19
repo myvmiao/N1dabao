@@ -141,7 +141,7 @@ else
 	exit 1
 fi
 
-if mkfs.btrfs -V >/dev/null;then
+if mkfs.vfat --help 1>/dev/nul 2>&1;then
 	echo "check mkfs.vfat ok"
 else
 	echo "mkfs.vfat 程序不存在，请安装 dosfstools"
