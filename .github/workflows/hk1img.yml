@@ -114,7 +114,7 @@ jobs:
       if: steps.xz.outputs.status == 'success'  &&  env.RELEASE == 'true' && !cancelled()
       uses: ncipollo/release-action@v1
       with:
-        name: ${{ env.DATE }} 🚀 / N1-Openwrt-img | 编译
+        name: ${{ env.DATE }} 🚀 / HK1-Openwrt-img | 编译
         allowUpdates: true
         tag: ${{ env.version }}
         commit: main
