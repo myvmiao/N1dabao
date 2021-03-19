@@ -30,10 +30,6 @@ jobs:
             flippy_filename: Armbian_20.10_Aml-s9xxx_buster_5.4.105-flippy-55+o.img.xz
             flippy_url: https://github.com/Netflixxp/fdibiao/releases/download/db/Armbian_20.10_Aml-s9xxx_buster_5.4.105-flippy-55+o.img.xz
             release_name: N1-jcnf-mini-55+o.img
-          - flippy_name: 55
-            flippy_filename: Armbian_20.10_Aml-s9xxx_buster_5.4.105-flippy-55+o.img.xz
-            flippy_url: https://github.com/Netflixxp/fdibiao/releases/download/db/Armbian_20.10_Aml-s9xxx_buster_5.4.105-flippy-55+o.img.xz
-            release_name: HK1-jcnf-mini-55+o.img
 
     env:
       FLIPPY_NAME: ${{ matrix.flippy_name }}   
@@ -104,11 +100,8 @@ jobs:
         cd /opt/openwrt
              
         sudo chmod +x mk_n1_opimg.sh
-        sudo ./mk_n1_opimg.sh
-        
-        sudo chmod +x mk_s905x3_multi.sh
-        sudo ./mk_s905x3_multi.sh
-        	
+        sudo ./mk_n1_opimg.sh 
+    
     - name: xz-z
       id: xz
       run: |
@@ -121,16 +114,16 @@ jobs:
       if: steps.xz.outputs.status == 'success'  &&  env.RELEASE == 'true' && !cancelled()
       uses: ncipollo/release-action@v1
       with:
-        name: ${{ env.DATE }} 🚀 / N1-Openwrt-img | 编译
+        name: ${{ env.DATE }} 🚀 / N1&HK1-Openwrt-img | 编译
         allowUpdates: true
         tag: ${{ env.version }}
         commit: main
         token: ${{ secrets.GITHUB_TOKEN   }}
         body: |
-          ## 鉴于N1各插件更新速度快，特单独开此release
+          ## 以下为N1和HK1的最新固件（如遇上游更新，次日上午7时自动编译打包最新固件）
           默认IP：192.168.1.99 默认密码： password
-          Openwrt🚀(注:此版本为jcnf个人的精简版。鉴于N1的性能，只有+o版，+o版为flowoffload加速)
-          N1在线升级方法：
+          Openwrt🚀(注:此版本为jcnf个人的精简版。只有+o版，+o版为flowoffload加速)
+          N1和HK1在线升级方法：
              1. cd /mnt/mmcblk2p4
              2. wget 升级脚本下载 https://github.com/Netflixxp/N1dabao/blob/main/55/opt/openwrt/files/update-amlogic-openwrt.sh
              3. wget img后缀名的固件链接,鼠标右击后缀.img文件获取链接地址
