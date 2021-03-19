@@ -1,0 +1,155 @@
+name: Build HK1 img
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Number of days.'
+        required: true
+        default: 60
+      minimum_runs:
+        description: 'The minimum runs to keep for each workflow.'
+        required: true
+        default: 6
+      
+env:
+  UPLOAD_COWTRANSFER: false
+  RELEASE: true
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    name: Build for ${{ matrix.flippy_name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - flippy_name: 55
+            flippy_filename: Armbian_20.10_Aml-s9xxx_buster_5.4.105-flippy-55+o.img.xz
+            flippy_url: https://github.com/Netflixxp/fdibiao/releases/download/db/Armbian_20.10_Aml-s9xxx_buster_5.4.105-flippy-55+o.img.xz
+            release_name: openwrt_s905x3_multi_R21.2.1_k5.4.105-flippy-55+o.img
+
+    env:
+      FLIPPY_NAME: ${{ matrix.flippy_name }}   
+      FLIPPY_FILENAME: ${{ matrix.flippy_filename }}   
+      FLIPPY_URL: ${{ matrix.flippy_url }}   
+      RELEASE_NAME: ${{ matrix.release_name }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+      
+    - name: Initialization environment
+      run: |     
+        version=$(curl -s "https://api.github.com/repos/Netflixxp/op-/releases/latest" | awk -F '"' '/tag_name/{print $4}')
+        
+        echo "version=$version"  >> $GITHUB_ENV
+        echo "DATE=$(date "+%Y-%m-%d %H:%M:%S")"  >> $GITHUB_ENV
+        
+        sudo chmod  -R 777 /opt
+        cp -r ${FLIPPY_NAME}/opt/* /opt
+        
+        test -d /opt/dl || mkdir -p /opt/dl
+        sudo chmod  -R 777 /opt/dl
+        
+        cd /opt
+        mkdir imgs
+        
+    - uses: actions/cache@v2
+      id: opwenwrtcache
+      with:
+        path: |
+          /opt/dl
+        key: ${{ runner.os }}-opwenwrt-${{ env.FLIPPY_NAME }}-${{ env.version }}
+            
+    - name: Download
+      #if: steps.opwenwrtcache.outputs.cache-hit != 'true'
+      run: |
+        cd /opt/dl
+        
+        wget  https://github.com/Netflixxp/op-/releases/download/$version/openwrt-armvirt-64-default-rootfs.tar.gz
+        wget ${FLIPPY_URL}
+        
+    - name: Check Files
+      run: |
+        cd /opt/dl
+        ls
+                
+    - name: Install the package
+      run: |
+        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+        sudo -E apt-get -qq update
+        sudo -E apt-get -qq install xz-utils btrfs-progs gawk zip unzip curl dosfstools  uuid-runtime
+        sudo -E apt-get -qq install git  git-core
+        sudo -E apt-get -qq autoremove --purge
+        sudo -E apt-get -qq clean
+    - name: Copy files
+      run: |
+        cp /opt/dl/openwrt-armvirt-64-default-rootfs.tar.gz /opt/openwrt/openwrt-armvirt-64-default-rootfs.tar.gz
+        cp /opt/dl/$FLIPPY_FILENAME /opt/imgs/$FLIPPY_FILENAME
+              
+    - name: build img
+      run: |
+        rm -rf /opt/openwrt/tmp/${RELEASE_NAME}.xz   
+        
+        cd /opt/imgs
+        xz -d $FLIPPY_FILENAME
+        
+        sudo chmod  -R 777 /opt
+        cd /opt/openwrt
+             
+        sudo chmod +x mk_s905x3_multi.sh
+        sudo ./mk_n1_opimg.sh
+        	
+    - name: xz-z
+      id: xz
+      run: |
+        sudo chmod  -R 777 /opt
+        cd /opt/openwrt/tmp 
+        xz -z $RELEASE_NAME
+        
+        echo "::set-output name=status::success"
+    - name: Create release
+      if: steps.xz.outputs.status == 'success'  &&  env.RELEASE == 'true' && !cancelled()
+      uses: ncipollo/release-action@v1
+      with:
+        name: ${{ env.DATE }} 🚀 / hk1-Openwrt-img | 编译
+        allowUpdates: true
+        tag: ${{ env.version }}
+        commit: main
+        token: ${{ secrets.GITHUB_TOKEN   }}
+        body: |
+          ## 此为HK1固件，N1盒子勿刷
+          默认IP：192.168.1.99 默认密码： password
+          Openwrt🚀(注:此版本为jcnf个人的精简版。鉴于N1的性能，只有+o版，+o版为flowoffload加速)
+          N1在线升级方法：
+             1. cd /mnt/mmcblk2p4
+             2. wget 升级脚本下载 https://github.com/Netflixxp/N1dabao/blob/main/55/opt/openwrt/files/update-amlogic-openwrt.sh
+             3. wget img后缀名的固件链接,鼠标右击后缀.img文件获取链接地址
+             4. chmod +x *.sh
+             5. ./升级脚本名字 img固件名 
+        artifacts: "/opt/openwrt/tmp/*.xz"   
+
+    - name: Upload firmware to WeTransfer
+      if: steps.xz.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress /opt/openwrt/tmp/$RELEASE_NAME.xz 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
+        
+    - name: Remove old Releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      with:
+        keep_latest: 3
+        delete_tags: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  over:
+    needs: [build]
+    runs-on: ubuntu-20.04
+    steps:
+    - name: TG notification #TG推送
+      run: curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=hk1打包成功"
