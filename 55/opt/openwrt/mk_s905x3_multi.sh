@@ -124,11 +124,6 @@ JQ="${PWD}/files/jq"
 ###########################################################################
 
 # 检查环境
-if [ $(id -u) -ne 0 ];then
-	echo "这个脚本需要用root用户来执行，你好象不是root吧？"
-	exit 1
-fi
-
 if [ ! -f "$LNX_IMG" ];then
 	echo "Armbian镜像: ${LNX_IMG} 不存在, 请检查!"
 	exit 1
