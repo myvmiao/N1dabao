@@ -1,28 +1,12 @@
-此项目基于flippy的38+o和55+o打包Phicomm N1的openwrt
+此项目基于flippy的55+o打包N1和s905X3 （hk1等）的openwrt
 
-N1的openwrt来自我自己的另一个项目[N1Openwrt](https://github.com/Netflixxp/op-)
+openwrt来自我自己的另一个项目[N1Openwrt](https://github.com/Netflixxp/op-)
 
-# 插件列表
+# 更新说明
+固件采用自动编译，Acrions将会在每天监控上游代码是否更新，如passwall ssrp等，一旦检测到上游代码更加将会自动编译打包，于每天上午7时发布最新版固件。
 
- 插件列表
-├ SSR-Plus [183-8]
-├ passwall[4-16]
-├ openclash[0.42.02]
-├ hello word[1.2-51]
-├ Argon主題 
-├ docker-ce
-├ AdGuard Home
-├ 实时监控
-├TTYD终端
-├动态DNS
-├UPdp
-├AdGuard Home
-├网易音乐解锁
-├京东薅羊毛
-├Frp
-├无线wifi
-登陆：192.168.1.99
-密码：password
+# 插件下载
+点击右面的 “Releases”，然后会看到N1和s905x3的固件，根据自己需求下载就好！
 
 # N1新版固件如何刷
 
@@ -38,4 +22,3 @@ N1的openwrt来自我自己的另一个项目[N1Openwrt](https://github.com/Netf
  * [coolsnowwolf/Lede](https://github.com/coolsnowwolf/lede)
  * [mingxiaoyu](https://github.com/mingxiaoyu)
  * [hibuddies](https://github.com/hibuddies/openwrt/)
-
