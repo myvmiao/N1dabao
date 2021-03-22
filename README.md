@@ -1,9 +1,7 @@
-此项目基于flippy的55+o打包N1和s905X3 （hk1等）的openwrt，为jcnf个人正在使用的固件版本。
+此项目基于flippy的55+o打包N1和s905X3 （hk1等）的openwrt，为jcnf个人正在使用的固件版本。openwrt来自我自己的另一个项目[N1Openwrt](https://github.com/Netflixxp/op-)
 
 # 默认IP及密码
 默认IP 192.168.1.99  密码 password
-
-openwrt来自我自己的另一个项目[N1Openwrt](https://github.com/Netflixxp/op-)
 
 # 插件包括
 * SSR-Plus
@@ -24,10 +22,10 @@ openwrt来自我自己的另一个项目[N1Openwrt](https://github.com/Netflixxp
 * 无线wifi
 
 # 自动更新说明
-固件采用自动编译，Acrions将会在每天监控上游代码是否更新，如passwall ssrp等，一旦检测到上游代码更加将会自动编译打包，于每天上午7时发布最新版固件。
+固件采用自动编译，Acrions将会在每天监控上游代码是否更新，如passwall ssrp等，一旦检测到上游代码更加将会自动编译打包，于每天上午7时30分发布最新版固件。
 
 # 固件下载
-点击右面的 “Releases”，然后会看到N1和s905x3的固件，根据自己需求下载就好！
+点击右面的 “Releases”，然后会看到N1和s905x3（HK1）的固件，根据自己需求下载就好！
 
 # N1新版固件如何刷
 
