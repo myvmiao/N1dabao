@@ -105,7 +105,7 @@ jobs:
     - name: pigz -9
       id: pigz
       run: |
-        sudo chmod -R 777 /opt
+        sudo chmod -R 777 /opt/openwrt/tmp
         cd /opt/openwrt/tmp 
         sudo pigz -9 $RELEASE_NAME
         
@@ -115,7 +115,7 @@ jobs:
       if: steps.gz.outputs.status == 'success'  &&  env.RELEASE == 'true' && !cancelled()
       uses: ncipollo/release-action@v1
       with:
-        name: ${{ env.DATE }} 🚀 / hk1-Openwrt-img | 编译
+        name: ${{ env.DATE }} 🚀 N1/ hk1-Openwrt-img | 编译
         allowUpdates: true
         tag: ${{ env.version }}
         commit: main
