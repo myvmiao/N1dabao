@@ -111,16 +111,25 @@ jobs:
         sudo pigz -9 $RELEASE_NAME
         
         echo "::set-output name=status::success"
+
+    - name: Check Files4
+      run: |
+        cd /opt/openwrt/tmp
+        ls
         
+    - name: 编译后硬盘容量
+      if: (!cancelled())
+      run: df -hT
+
     - name: Create release
-      if: steps.gz.outputs.status == 'success'  &&  env.RELEASE == 'true' && !cancelled()
+      id: release
       uses: ncipollo/release-action@v1
       with:
         name: ${{ env.DATE }} 🚀 N1/ hk1-Openwrt-img | 编译
         allowUpdates: true
         tag: ${{ env.version }}
         commit: main
-        token: ${{ secrets.GITHUB_TOKEN   }}
+        token: ${{ secrets.RELEASES_TOKEN }}
         body: |
           ## 以下为N1和HK1的最新固件（如遇上游更新，次日上午7时自动编译打包最新固件）
           默认IP：192.168.1.99 默认密码： password
