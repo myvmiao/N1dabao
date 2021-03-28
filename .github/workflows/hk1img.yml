@@ -102,17 +102,17 @@ jobs:
         sudo chmod +x mk_s905x3_multi.sh
         sudo ./mk_s905x3_multi.sh
         	
-    - name: xz-z
-      id: xz
+    - name: pigz -9
+      id: pigz
       run: |
         sudo chmod -R 777 /opt
         cd /opt/openwrt/tmp 
-        sudo xz -z $RELEASE_NAME
+        sudo pigz -9 $RELEASE_NAME
         
         echo "::set-output name=status::success"
         
     - name: Create release
-      if: steps.xz.outputs.status == 'success'  &&  env.RELEASE == 'true' && !cancelled()
+      if: steps.gz.outputs.status == 'success'  &&  env.RELEASE == 'true' && !cancelled()
       uses: ncipollo/release-action@v1
       with:
         name: ${{ env.DATE }} 🚀 / hk1-Openwrt-img | 编译
@@ -130,10 +130,10 @@ jobs:
              3. wget img后缀名的固件链接,鼠标右击后缀.img文件获取链接地址
              4. chmod +x *.sh
              5. ./升级脚本名字 img固件名  
-        artifacts: "/opt/openwrt/tmp/*.xz"   
+        artifacts: "/opt/openwrt/tmp/*.gz"   
 
     - name: Upload firmware to WeTransfer
-      if: steps.xz.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      if: steps.gz.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
       run: |
         curl -fsSL git.io/file-transfer | sh
         ./transfer cow --block 2621440 -s -p 64 --no-progress /opt/openwrt/tmp/$RELEASE_NAME.xz 2>&1 | tee cowtransfer.log
