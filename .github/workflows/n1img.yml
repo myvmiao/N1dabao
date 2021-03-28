@@ -82,6 +82,7 @@ jobs:
         sudo -E apt-get -qq update
         sudo -E apt-get -qq install xz-utils btrfs-progs gawk zip unzip curl dosfstools  uuid-runtime
         sudo -E apt-get -qq install git  git-core
+        sudo -E apt-get -qq install pigz
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
     - name: Copy files
@@ -102,24 +103,33 @@ jobs:
         sudo chmod +x mk_n1_opimg.sh
         sudo ./mk_n1_opimg.sh 
     
-    - name: xz-z
-      id: xz
+    - name: pigz -9
+      id: pigz
       run: |
-        sudo chmod  -R 777 /opt
-        cd /opt/openwrt/tmp 
-        sudo xz -z $RELEASE_NAME
-        
+        sudo chmod -R 777 /opt/openwrt/tmp
+        cd /opt/openwrt/tmp
+        sudo pigz -9 $RELEASE_NAME
+
         echo "::set-output name=status::success"
 
+    - name: Check Files4
+      run: |
+        cd /opt/openwrt/tmp
+        ls
+
+    - name: 编译后硬盘容量
+      if: (!cancelled())
+      run: df -hT
+
     - name: Create release
-      if: steps.xz.outputs.status == 'success'  &&  env.RELEASE == 'true' && !cancelled()
+      id: release
       uses: ncipollo/release-action@v1
       with:
-        name: ${{ env.DATE }} 🚀 / N1&HK1-Openwrt-img | 编译
+        name: ${{ env.DATE }} 🚀 N1/ hk1-Openwrt-img | 编译
         allowUpdates: true
         tag: ${{ env.version }}
         commit: main
-        token: ${{ secrets.GITHUB_TOKEN   }}
+        token: ${{ secrets.RELEASES_TOKEN }}
         body: |
           ## 以下为N1和HK1的最新固件（如遇上游更新，次日上午7时自动编译打包最新固件）
           默认IP：192.168.1.99 默认密码： password
@@ -128,15 +138,16 @@ jobs:
              1. cd /mnt/mmcblk2p4
              2. wget 升级脚本下载 https://github.com/Netflixxp/N1dabao/blob/main/56/opt/openwrt/files/update-amlogic-openwrt.sh
              3. wget img后缀名的固件链接,鼠标右击后缀.img文件获取链接地址
-             4. chmod +x *.sh
-             5. ./升级脚本名字 img固件名 
-        artifacts: "/opt/openwrt/tmp/*.xz"   
+             4. gzip -d 上一步下载的固件全名
+             5. chmod +x *.sh
+             6. ./升级脚本名字 img固件名
+        artifacts: "/opt/openwrt/tmp/*.gz"   
 
     - name: Upload firmware to WeTransfer
-      if: steps.xz.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
+      if: steps.gz.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
       run: |
         curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress /opt/openwrt/tmp/$RELEASE_NAME.xz 2>&1 | tee cowtransfer.log
+        ./transfer cow --block 2621440 -s -p 64 --no-progress /opt/openwrt/tmp/$RELEASE_NAME.gz 2>&1 | tee cowtransfer.log
         echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
         echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
         

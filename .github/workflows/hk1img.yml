@@ -12,7 +12,7 @@ on:
         description: 'The minimum runs to keep for each workflow.'
         required: true
         default: 6
-      
+
 env:
   UPLOAD_COWTRANSFER: false
   RELEASE: true
@@ -32,50 +32,50 @@ jobs:
             release_name: HK1-jcnf-mini-56+o.img
 
     env:
-      FLIPPY_NAME: ${{ matrix.flippy_name }}   
-      FLIPPY_FILENAME: ${{ matrix.flippy_filename }}   
-      FLIPPY_URL: ${{ matrix.flippy_url }}   
+      FLIPPY_NAME: ${{ matrix.flippy_name }}
+      FLIPPY_FILENAME: ${{ matrix.flippy_filename }}
+      FLIPPY_URL: ${{ matrix.flippy_url }}
       RELEASE_NAME: ${{ matrix.release_name }}
     steps:
     - name: Checkout
       uses: actions/checkout@main
-      
+
     - name: Initialization environment
-      run: |     
+      run: |
         version=$(curl -s "https://api.github.com/repos/Netflixxp/op-/releases/latest" | awk -F '"' '/tag_name/{print $4}')
-        
+
         echo "version=$version"  >> $GITHUB_ENV
         echo "DATE=$(date "+%Y-%m-%d %H:%M:%S")"  >> $GITHUB_ENV
-        
+
         sudo chmod -R 777 /opt
         cp -r ${FLIPPY_NAME}/opt/* /opt
-        
+
         test -d /opt/dl || mkdir -p /opt/dl
         sudo chmod -R 777 /opt/dl
-        
+
         cd /opt
         mkdir imgs
-        
+
     - uses: actions/cache@v2
       id: opwenwrtcache
       with:
         path: |
           /opt/dl
         key: ${{ runner.os }}-opwenwrt-${{ env.FLIPPY_NAME }}-${{ env.version }}
-            
+
     - name: Download
       #if: steps.opwenwrtcache.outputs.cache-hit != 'true'
       run: |
         cd /opt/dl
-        
+
         wget https://github.com/Netflixxp/op-/releases/download/$version/openwrt-armvirt-64-default-rootfs.tar.gz
         wget ${FLIPPY_URL}
-        
+
     - name: Check Files
       run: |
         cd /opt/dl
         ls
-                
+
     - name: Install the package
       run: |
         sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
@@ -89,34 +89,34 @@ jobs:
       run: |
         cp /opt/dl/openwrt-armvirt-64-default-rootfs.tar.gz /opt/openwrt/openwrt-armvirt-64-default-rootfs.tar.gz
         cp /opt/dl/$FLIPPY_FILENAME /opt/imgs/$FLIPPY_FILENAME
-              
+
     - name: build img
       run: |
-        rm -rf /opt/openwrt/tmp/${RELEASE_NAME}.xz   
-        
+        rm -rf /opt/openwrt/tmp/${RELEASE_NAME}.xz
+
         cd /opt/imgs
         xz -d $FLIPPY_FILENAME
-        
+
         sudo chmod -R 777 /opt
         cd /opt/openwrt
-             
+
         sudo chmod +x mk_s905x3_multi.sh
         sudo ./mk_s905x3_multi.sh
-        	
+
     - name: pigz -9
       id: pigz
       run: |
         sudo chmod -R 777 /opt/openwrt/tmp
-        cd /opt/openwrt/tmp 
+        cd /opt/openwrt/tmp
         sudo pigz -9 $RELEASE_NAME
-        
+
         echo "::set-output name=status::success"
 
     - name: Check Files4
       run: |
         cd /opt/openwrt/tmp
         ls
-        
+
     - name: 编译后硬盘容量
       if: (!cancelled())
       run: df -hT
@@ -138,9 +138,10 @@ jobs:
              1. cd /mnt/mmcblk2p4
              2. wget 升级脚本下载 https://github.com/Netflixxp/N1dabao/blob/main/56/opt/openwrt/files/update-amlogic-openwrt.sh
              3. wget img后缀名的固件链接,鼠标右击后缀.img文件获取链接地址
-             4. chmod +x *.sh
-             5. ./升级脚本名字 img固件名  
-        artifacts: "/opt/openwrt/tmp/*.gz"   
+             4. gzip -d 上一步下载的固件全名
+             5. chmod +x *.sh
+             6. ./升级脚本名字 img固件名
+        artifacts: "/opt/openwrt/tmp/*.gz"
 
     - name: Upload firmware to WeTransfer
       if: steps.gz.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
@@ -149,7 +150,7 @@ jobs:
         ./transfer cow --block 2621440 -s -p 64 --no-progress /opt/openwrt/tmp/$RELEASE_NAME.xz 2>&1 | tee cowtransfer.log
         echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
         echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-        
+
     - name: Remove old Releases
       uses: dev-drprasad/delete-older-releases@v0.1.0
       with:
@@ -157,7 +158,7 @@ jobs:
         delete_tags: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
+
   over:
     needs: [build]
     runs-on: ubuntu-20.04
