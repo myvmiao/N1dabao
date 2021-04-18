@@ -73,7 +73,12 @@ jobs:
         cd /opt/kernel
         sudo chmod +x mk_s905x3_multi.sh
         sudo ./mk_s905x3_multi.sh
-    
+        
+    - name: copy update files
+      run: |
+        cd /opt/kernel
+        sudo cp files/update-amlogic-openwrt.sh tmp/update-amlogic-openwrt.sh
+        
     - name: pigz -9
       id: pigz
       run: |
