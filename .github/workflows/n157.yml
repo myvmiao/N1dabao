@@ -47,7 +47,7 @@ jobs:
         cp -r ${FLIPPY_NAME}/opt/* /opt
                 
     - name: Download
-        run: |
+      run: |
         cd /opt/kernel
         
         wget  https://github.com/Netflixxp/op-/releases/download/$version/openwrt-armvirt-64-default-rootfs.tar.gz
