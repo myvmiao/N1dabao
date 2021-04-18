@@ -117,7 +117,7 @@ jobs:
              4. gzip -d 上一步下载的固件全名
              5. chmod +x *.sh
              6. ./升级脚本名字 img固件名
-        artifacts: "/opt/kernel/tmp/*.gz"   
+        artifacts: "/opt/kernel/tmp/*"   
 
     - name: Upload firmware to WeTransfer
       if: steps.gz.outputs.status == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
