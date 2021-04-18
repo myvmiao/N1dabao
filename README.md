@@ -13,8 +13,8 @@
 
 # N1和HK1在线升级方法
 * cd /mnt/mmcblk2p4
-* wget 升级脚本下载 https://github.com/Netflixxp/N1dabao/blob/main/56/opt/openwrt/files/update-amlogic-openwrt.sh
-* wget img后缀名的固件链接,鼠标右击后缀.img文件获取链接地址 [点这里跳转](https://github.com/Netflixxp/N1dabao/releases)
+* wget 升级脚本下载.sh后缀文件 [点这里跳转](https://github.com/Netflixxp/N1dabao/releases)
+* wget .gz后缀名的固件链接,鼠标右击后缀.gz文件获取链接地址 [点这里跳转](https://github.com/Netflixxp/N1dabao/releases)
 * gzip -d 上一步下载的固件全名
 * chmod +x *.sh
 * ./升级脚本名字 img固件名
