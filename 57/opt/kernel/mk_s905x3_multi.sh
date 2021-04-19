@@ -46,7 +46,7 @@ fi
 echo "Use $OPWRT_ROOTFS_GZ as openwrt rootfs!"
 
 # 目标镜像文件
-TGT_IMG="${WORK_DIR}/HK1-jcnf-mini-57+o.img"
+TGT_IMG="${WORK_DIR}/openwrt_${SOC}_${BOARD}_${OPENWRT_VER}_k${KERNEL_VERSION}${SUBVER}.img"
 
 # 判断内核版本是否 >= 5.10
 K_VER=$(echo "$KERNEL_VERSION" | cut -d '.' -f1)
@@ -415,6 +415,9 @@ fi
 if [ -f etc/init.d/dockerd ] && [ -f $DOCKERD_PATCH ];then
     patch -p1 < $DOCKERD_PATCH
 fi
+if [ -f usr/bin/xray-plugin ] && [ -f usr/bin/v2ray-plugin ];then
+   ( cd usr/bin && rm -f v2ray-plugin && ln -s xray-plugin v2ray-plugin )
+fi
 
 [ -d ${FMW_HOME} ] && cp -a ${FMW_HOME}/* lib/firmware/
 [ -f ${SYSCTL_CUSTOM_CONF} ] && cp ${SYSCTL_CUSTOM_CONF} etc/sysctl.d/
@@ -462,8 +465,6 @@ fi
 
 chmod 755 ./etc/init.d/*
 
-sed -e "s/START=25/START=99/" -i ./etc/init.d/dockerd 2>/dev/null
-sed -e "s/START=90/START=99/" -i ./etc/init.d/dockerd 2>/dev/null
 sed -e "s/option wan_mode 'false'/option wan_mode 'true'/" -i ./etc/config/dockerman 2>/dev/null
 mv -f ./etc/rc.d/S??dockerd ./etc/rc.d/S99dockerd 2>/dev/null
 rm -f ./etc/rc.d/S80nginx 2>/dev/null
@@ -507,7 +508,6 @@ chattr +ia ./etc/config/fstab
 echo "/etc/config/fstab --->"
 cat ./etc/config/fstab
 
-[ -f ./usr/bin/sslocal ] && mv ./usr/bin/sslocal ./usr/bin/sslocal-untest
 [ -f ./etc/docker-init ] && rm -f ./etc/docker-init
 
 mkdir -p ./etc/modprobe.d
