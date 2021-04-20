@@ -9,7 +9,7 @@
 * 输入安装命令 `./install-to-emmc.sh`
 * 如果显示挂载失败，重新执行上述安装命令`./install-to-emmc.sh`
 
-# N1和HK1在线升级方法
+# N1在线升级方法
 * cd /mnt/mmcblk2p4
 * wget 升级脚本下载.sh后缀文件
 * wget .gz后缀名的固件链接,鼠标右击后缀.gz文件获取链接地址
