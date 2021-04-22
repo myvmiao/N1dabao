@@ -1,4 +1,4 @@
-此项目基于flippy的57+o打包N1(s905d)的openwrt，为个人正在使用的固件版本。
+此项目基于flippy的57+o打包N1(s905d)的openwrt。
 
 N1的openwrt来自我自己的另一个项目[N1Openwrt](https://github.com/myvmiao/N1)
 # 默认IP及密码
