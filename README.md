@@ -1,10 +1,10 @@
 此项目基于flippy的57+o打包N1(s905d)的openwrt，为个人正在使用的固件版本。
-
+N1的openwrt来自我自己的另一个项目[N1Openwrt](https://github.com/myvmiao/N1)
 # 默认IP及密码
-默认IP 192.168.2.3  密码 password
+默认IP 192.168.2.5  密码 password
 
 * 将固件写入U盘或TF卡 推荐写盘软件 [rufu](https://rufus.ie/zh/)
-* 插入U盘启动盒子，输入192.168.2.3进入后台
+* 插入U盘启动盒子，输入192.168.2.5进入后台
 * 在系统——TTYD终端——输入用户名root；密码password
 * 输入安装命令 `./install-to-emmc.sh`
 * 如果显示挂载失败，重新执行上述安装命令`./install-to-emmc.sh`
