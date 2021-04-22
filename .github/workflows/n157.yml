@@ -108,7 +108,7 @@ jobs:
         token: ${{ secrets.RELEASES_TOKEN }}
         body: |
           ## 以下为N1的最新固件（如遇上游更新，次日上午7时自动编译打包最新固件）
-          默认IP：192.168.2.3 默认密码： password
+          默认IP：192.168.2.5 默认密码： password
           Openwrt🚀(注:此版本为个人的精简版。只有+o版，+o版为flowoffload加速)
           N1在线升级方法：
              1. cd /mnt/mmcblk2p4
