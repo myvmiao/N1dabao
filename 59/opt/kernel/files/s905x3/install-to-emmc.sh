@@ -9,7 +9,7 @@ ROOT2=960
 TARGET_SHARED_FSTYPE=f2fs
 BACKUP_IMG="/root/bootloader_backup.img"
 FDTFILE="meson-sm1-x96-max-plus.dtb"
-UBOOT_OVERLOAD="u-boot-x96maxplus.bin"
+UBOOT_OVERLOAD="u-boot-ugoos-x3.bin"
 
 KERNEL_VERSION=$(uname -r)
 # 判断内核版本是否 >= 5.10
@@ -113,12 +113,16 @@ cat <<EOF
 请选择 Amlogic S905X3 盒子型号: 
 1. X96-Max+ (4G DDR) 普通版 注意：将会强制刷入新的 bootloader!
 2. X96-Max+ (4G DDR) 超频版 注意：将会强制刷入新的 bootloader!
-
 3. HK1 Box (4G DDR) 普通版
 4. HK1 Box (4G DDR) 超频版
-
 5. H96 Max X3 (4G DDR) 普通版
 6. H96 Max X3 (4G DDR) 超频版
+7. Ugoos X3 (Cube/Pro/Plus) 普通版
+8. Ugoos X3 (Cube/Pro/Plus) 超频版
+a. X96-air 千兆版
+b. X96-air 百兆版
+c. A95XF3-air 千兆版
+d. A95XF3-air 百兆版
 
 0. 其它
 -------------------
@@ -152,6 +156,26 @@ case $boxtype in
 	   MAINLINE_UBOOT="/lib/u-boot/h96maxx3-u-boot.bin.sd.bin"
            U_BOOT_EXT=1
            ;;
+        7) FDTFILE="meson-sm1-ugoos-x3.dtb"
+	   MAINLINE_UBOOT="/lib/u-boot/ugoos-x3-u-boot.bin.sd.bin"
+           U_BOOT_EXT=1
+           ;;
+        8) FDTFILE="meson-sm1-ugoos-x3-oc.dtb"
+	   MAINLINE_UBOOT="/lib/u-boot/ugoos-x3-u-boot.bin.sd.bin"
+           U_BOOT_EXT=1
+           ;;
+        'a') FDTFILE="meson-sm1-x96-air-1000.dtb"
+             U_BOOT_EXT=1
+             ;;
+        'b') FDTFILE="meson-sm1-x96-air-100.dtb"
+             U_BOOT_EXT=1
+             ;;
+        'c') FDTFILE="meson-sm1-a95xf3-air-1000.dtb"
+             U_BOOT_EXT=1
+             ;;
+        'd') FDTFILE="meson-sm1-a95xf3-air-100.dtb"
+             U_BOOT_EXT=1
+             ;;
 	0) cat <<EOF
 请输入 dtb 文件名, 例如: $FDTFILE
 自定义的dtb文件有可能无法工作，请慎重选择！
@@ -471,9 +495,11 @@ while [ $i -le $max_try ]; do
 		fi
 	else
 		echo "挂载成功"
-		echo -n "创建文件夹 ... "
 		cd /mnt/${EMMC_NAME}p2
-		mkdir -p bin boot dev etc lib opt mnt overlay proc rom root run sbin sys tmp usr www
+		echo -n "创建 etc 子卷 ..."
+                btrfs subvolume create etc
+		echo -n "创建文件夹 ... "
+		mkdir -p .snapshots .reserved bin boot dev lib opt mnt overlay proc rom root run sbin sys tmp usr www
 		ln -sf lib/ lib64
 		ln -sf tmp/ var
 		echo "完成"
@@ -533,9 +559,15 @@ config mount
         option fstype 'vfat'
 		
 EOF
+                echo -n "创建初始 etc 快照 -> .snapshots/etc-000"
+		cd /mnt/${EMMC_NAME}p2 && \
+		btrfs subvolume snapshot -r etc .snapshots/etc-000
+
 		# 2021.04.01添加
 		# 强制锁定fstab,防止用户擅自修改挂载点
-		chattr +ia fstab
+		# 开启了快照功能之后，不再需要锁定fstab
+	        #cd /mnt/${EMMC_NAME}p2/etc/config && \
+		#chattr +ia fstab
 
 		cd /
 		umount -f /mnt/${EMMC_NAME}p2
